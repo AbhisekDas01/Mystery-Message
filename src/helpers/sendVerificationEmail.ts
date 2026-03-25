@@ -1,5 +1,5 @@
 import { resend } from "@/lib/resend";
-import VerificationEmail from "../../email/verificationEmail";
+import VerificationEmail from "../../email/VerificationEmail";
 
 import { ApiResponse } from "@/types/ApiResponse";
 
