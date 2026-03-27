@@ -5,7 +5,7 @@ import AuthProvider from "@/context/AuthProviders";
 import { Toaster } from "@/components/ui/sonner"
 
 const inter = Inter({
-  variable: "--font-inter",
+  variable: "--font-sans",
   subsets: ["latin"],
 });
 
@@ -23,7 +23,7 @@ export default function RootLayout({
     <html lang="en">
       <AuthProvider>
         <body
-          className={`${inter.className} antialiased`}
+          className={`${inter.variable} font-sans antialiased`}
         >
           {children}
           <Toaster />
