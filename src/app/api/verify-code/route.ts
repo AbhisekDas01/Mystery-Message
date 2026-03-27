@@ -1,7 +1,5 @@
 import dbConnect from "@/lib/dbConnect";
 import UserModel from "@/model/User";
-import { success, z} from "zod";
-import { usernameValidation } from "@/schemas/signUpSchema";
 
 export async function POST(request:Request) {
     
@@ -19,6 +17,7 @@ export async function POST(request:Request) {
                 message: 'User not found'
             }, {status: 400});
         };
+
 
 
         const isCodeValid = user.verifyCode === code;
