@@ -5,13 +5,13 @@ import { Controller, useForm } from 'react-hook-form';
 import * as z from 'zod';
 import Link from 'next/link';
 import { useEffect, useState } from 'react';
-import { useDebounce } from 'use-debounce';
+import { useDebouncedCallback } from 'use-debounce';
 import { toast } from "sonner"
 import { useRouter } from 'next/navigation';
 import axios, { AxiosError } from 'axios'
 import { signUpSchema } from '@/schemas/signUpSchema';
 import { ApiResponse } from '@/types/ApiResponse';
-import { Field, FieldError, FieldGroup, FieldLabel } from '@/components/ui/field';
+import { Field, FieldError, FieldGroup, FieldLabel , FieldDescription } from '@/components/ui/field';
 import { Input } from '@/components/ui/input';
 import { Eye, EyeOff, Loader2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -21,12 +21,12 @@ import { Button } from '@/components/ui/button';
 const page = () => {
 
     const [username, setUsername] = useState("");
-    const [usernameMessage, setUsernameMessage] = useState("");
+    const [usernameMessage, setUsernameMessage] = useState<{message: string, success: boolean} | null>(null);
     const [isCheckingUsername, setIsCheckingUsername] = useState(false);
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [showPassword, setShowPassword] = useState(false);
 
-    const [debouncedUsername] = useDebounce(username, 300);
+    const debounce = useDebouncedCallback((value) => { setUsername(value) }, 500);
     const router = useRouter();
 
     //zod implementation
@@ -42,20 +42,26 @@ const page = () => {
     useEffect(() => {
 
         const checkUsernameUnique = async () => {
-            if (debouncedUsername) {
+            if (username) {
                 setIsCheckingUsername(true);
-                setUsernameMessage("");
+                setUsernameMessage(null);
 
                 try {
 
-                    const response = await axios.get(`/api/check-username-unique?username=${debouncedUsername}`);
+                    const response = await axios.get(`/api/check-username-unique?username=${username}`);
                     console.log("Check username : ", response);
 
-                    setUsernameMessage(response.data.message);
+                    setUsernameMessage({
+                        message: response.data.message,
+                        success: response.data.success ?? true
+                    });
 
                 } catch (error) {
                     const axiosError = error as AxiosError<ApiResponse>;
-                    setUsernameMessage(axiosError.response?.data.message ?? "Error checking username");
+                    setUsernameMessage({
+                        message: axiosError.response?.data.message ?? "Error checking username",
+                        success: false
+                    });
                 } finally {
                     setIsCheckingUsername(false);
                 }
@@ -63,7 +69,7 @@ const page = () => {
         }
         checkUsernameUnique();
 
-    }, [debouncedUsername]);
+    }, [username]);
 
     const onSubmit = async (data: z.infer<typeof signUpSchema>) => {
         setIsSubmitting(true);
@@ -113,17 +119,30 @@ const page = () => {
                                     <FieldLabel htmlFor="form-username">
                                         Username
                                     </FieldLabel>
-                                    <Input
-                                        {...field}
-                                        onChange={(e) => {
-                                            field.onChange(e);
-                                            setUsername(e.target.value);
-                                        }}
-                                        className='py-5'
-                                        id="form-username"
-                                        aria-invalid={fieldState.invalid}
-                                        placeholder="Enter Username"
-                                    />
+                                    <div className="relative">
+
+                                        <Input
+                                            {...field}
+                                            onChange={(e) => {
+                                                field.onChange(e);
+                                                debounce(e.target.value);
+                                            }}
+                                            className='py-5 pr-10'
+                                            id="form-username"
+                                            aria-invalid={fieldState.invalid}
+                                            placeholder="Enter Username"
+                                        />
+
+                                        {isCheckingUsername && <Loader2 className='absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 animate-spin' />}
+
+                                    </div>
+
+                                    {usernameMessage && (
+                                        <p className={`text-sm ${usernameMessage.success ? 'text-green-500' : 'text-red-500'}`}>
+                                            {usernameMessage.message}
+                                        </p>
+                                    )}
+
                                     {fieldState.invalid && (
                                         <FieldError errors={[fieldState.error]} />
                                     )}
@@ -201,7 +220,7 @@ const page = () => {
                 <div className="text-center mt-4">
                     <p className='text-xs text-gray-700'>Already a member?{' '}
                         <Link href={'/sign-in'} className='text-blue-400 hover:text-blue-800'>
-                        Sign In
+                            Sign In
                         </Link>
                     </p>
                 </div>
