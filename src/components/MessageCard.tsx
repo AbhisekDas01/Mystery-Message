@@ -21,6 +21,9 @@ import {
 import { Button } from "@/components/ui/button"
 import { X } from "lucide-react"
 import { Message } from "@/model/User"
+import axios from "axios"
+import { ApiResponse } from "@/types/ApiResponse"
+import { toast } from "sonner"
 
 type MessageCardProp = {
     message: Message;
@@ -29,7 +32,18 @@ type MessageCardProp = {
 
 const MessageCard = ({message , onMessageDelete} : MessageCardProp) => {
 
+    const handleDeleteConfirm = async () => {
 
+        try {
+
+            const response = await axios.delete<ApiResponse>(`/api/delete-message/${message._id}`);
+
+            toast.success(response.data.message);
+            
+        } catch (error) {
+            
+        }
+    }
 
     return (
         <Card>
