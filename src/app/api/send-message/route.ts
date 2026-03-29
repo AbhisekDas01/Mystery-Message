@@ -3,7 +3,7 @@ import UserModel from "@/model/User";
 import { messageSchema } from "@/schemas/messageSchema";
 
 import {Message} from '@/model/User';
-import { success } from "zod";
+
 
 export async function POST(request:Request) {
 

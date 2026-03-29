@@ -18,8 +18,10 @@ const Navbar = () => {
                 <a href="#" className='text-xl font-bold mb-4 md:mb-0'>Mystry Message</a>
                 {session ? (
                     <>
-                        <span className='mr-4'>Welcome, {user?.username || user?.email}</span>
-                        <Button className='w-full m-auto' onClick={() => signOut()}>Logout</Button>
+                        <div className='flex items-center justify-between gap-5'>
+                            <span className='mr-4'>Welcome, {user?.username || user?.email}</span>
+                            <Button className='m-auto cursor-pointer' onClick={() => signOut()}>Logout</Button>
+                        </div>
                     </>
                 ) : (<Link href={'/sign-in'}>
                     <Button className='w-full m-auto'>Login</Button>
