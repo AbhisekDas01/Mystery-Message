@@ -1,4 +1,4 @@
-# Mystery Message (True Feedback)
+# Mystery Message (True Feedback) 
 
 A full-stack anonymous messaging application built with Next.js, allowing users to receive anonymous feedback and messages securely. 
 
