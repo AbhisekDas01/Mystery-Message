@@ -16,7 +16,7 @@ export async function POST(req: Request) {
     });
 
     // Respond with the stream
-    return response.toDataStreamResponse();
+    return response.toTextStreamResponse();
   } catch (error) {
     if (error instanceof Error) {
       console.error("OpenAI API Error:", error.message);
